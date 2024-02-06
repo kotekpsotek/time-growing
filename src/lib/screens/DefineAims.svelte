@@ -4,8 +4,12 @@
     import { currentScreen } from "../store/statefull";
     import { writable, type Writable } from "svelte/store";
     import { fade } from "svelte/transition";
-    import { CloseOutline, TaskAdd } from "carbon-icons-svelte";
+    import { CloseOutline, TaskAdd, TrashCan } from "carbon-icons-svelte";
 
+    type ID = number | undefined;
+    type FocusOnDeleteButton = false;
+    
+    const showDelete: Writable<[boolean, ID, FocusOnDeleteButton]> = writable([false, undefined, false]);
     let aims: { [id: string]: number | undefined } = {}
     const name: String = "Name"
 
@@ -78,6 +82,14 @@
         node.focus()
         return {}
     }
+
+    function mLeaveAim() {
+        setTimeout(() => {
+            if (!$showDelete[2]) {
+                $showDelete = [false, undefined, false];
+            }
+        })
+    }
 </script>
 <div class="w-aims h-aims">
     <ActionBar>
@@ -101,11 +113,18 @@
         <div class="pt-2 relative">
             {#if Object.entries(aims).length}
                 <div id="aims">
-                    {#each Object.keys(aims) as aimName}
-                        <button class="w-full flex justify-between bg-card py-2 px-1">
-                            <p class="text-st-btn max-w-1/2 font-medium">{aimName}</p>
-                            <p class="max-w-5/12 text-center font-semibold">{aims[aimName]} minutes</p>
-                        </button>
+                    {#each Object.keys(aims) as aimName, i}
+                        <div id="red-hair-couple" class="flex gap-x-1">
+                            <button class="w-full flex justify-between bg-cardpx-1" on:mouseenter={_ => $showDelete = [true, i, false]} on:mouseleave={mLeaveAim}>
+                                <p class="text-st-btn max-w-1/2 font-medium py-2">{aimName}</p>
+                                <p class="max-w-5/12 text-center font-semibold py-2">{aims[aimName]} minutes</p>
+                            </button>
+                            {#if $showDelete[0] && $showDelete[1] == i}
+                                <button class="p-2 bg-zinc-700" on:mouseleave={_ => $showDelete = [false, undefined, false]}>
+                                    <TrashCan size={22} fill="white"/>
+                                </button>
+                            {/if}
+                        </div>
                     {/each}
                 </div>
             {/if}
