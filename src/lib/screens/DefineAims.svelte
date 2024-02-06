@@ -105,8 +105,8 @@
 </script>
 <div class="w-aims h-aims">
     <ActionBar>
-        <button slot="left" class="text-act-btns font-bold text-lg" on:click={back}>Back</button>
-        <button slot="right" class="text-act-btns font-bold text-lg" on:click={ok}>Ok</button>
+        <button slot="left" class="text-act-btns font-medium text-lg" on:click={back}>Back</button>
+        <button slot="right" class="text-act-btns font-medium text-lg" on:click={ok}>Ok</button>
     </ActionBar>
     <div id="aims-sector" class="pt-6 px-2">
         <div id="one-stripe" class="flex justify-between items-center">
