@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config}*/
+const cardsElementBackgroundColor = "rgb(255, 255, 255)"
+
 const config = {
   content: ["./src/**/*.{html,js,svelte,ts}"],
 
@@ -11,7 +13,8 @@ const config = {
         "aims": "700px"
       },
       backgroundColor: {
-        "st-btn": "#0E9D1C"
+        "st-btn": "#0E9D1C",
+        "card": cardsElementBackgroundColor
       },
       borderColor: {
         "st-btn": "#1ABB00"
@@ -21,7 +24,8 @@ const config = {
         "oxygen-bold": ["Oxygen Bold",  "sans-serif"]
       },
       colors: {
-        "act-btns": "#1492C8"
+        "act-btns": "#1492C8",
+        "st-btn": "#1ABB00"
       },
       fontSize: {
         "btn-into": "17px"
