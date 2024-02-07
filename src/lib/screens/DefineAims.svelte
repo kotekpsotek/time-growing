@@ -5,6 +5,7 @@
     import { writable, type Writable } from "svelte/store";
     import { fade } from "svelte/transition";
     import { CloseOutline, TaskAdd, TrashCan } from "carbon-icons-svelte";
+    import Helper from "./parts/Helper.svelte";
 
     type ID = string | undefined;
     type FocusOnDeleteButton = boolean;
@@ -94,16 +95,8 @@
             })
         })
     }
-
-    function removeAim(aimName: string) {
-        return () => {
-            // delete aims[aimName];
-            // aims = aims;
-            console.log(aimName)
-        }
-    }
 </script>
-<div class="w-aims h-aims">
+<div class="w-aims h-aims relative overflow-hidden">
     <ActionBar>
         <button slot="left" class="text-act-btns font-medium text-lg" on:click={back}>Back</button>
         <button slot="right" class="text-act-btns font-medium text-lg" on:click={ok}>Ok</button>
@@ -154,6 +147,8 @@
             {/if}
         </div>
     </div>
+    <Helper Class="absolute bottom-0 right-0" content="Each achieved aim or overlayed will multiply your growth ratio by 
+    1/4 from its goal time"/>
 </div>
 
 <style>
