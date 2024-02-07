@@ -6,24 +6,37 @@
     import { fade } from "svelte/transition";
     import { CloseOutline, TaskAdd, TrashCan } from "carbon-icons-svelte";
     import Helper from "./parts/Helper.svelte";
+    import loadash from "lodash"
 
     type ID = string | undefined;
     type FocusOnDeleteButton = boolean;
     
     const showDelete: Writable<[boolean, ID, FocusOnDeleteButton]> = writable([false, undefined, false]);
-    let aims: { [id: string]: number | undefined } = {}
-    const name: String = "Name"
+    let aims: { [id: string]: number | undefined } = {};
+    (async () => {
+        aims = (await chrome.storage.sync.get("aims"))["aims"]
+    })()
 
-    function back() {
+    const inback = () => {
         $currentScreen = "newcomer"
-        
+    }
+
+    async function back() {
+        const aimsS = await chrome.storage.sync.get("aims");
+
+        if (!loadash.isEqual(aimsS, aims)) {
+            const permission = confirm("You have made unsaved aims. By going back you will deprive yourself those. Are you sure?")
+            if (permission) inback();
+        }
+        else inback()
     }
 
     function ok() {
-        // TODO: save here user aims before swap screen
+        // Save to Persistant storage
         chrome.storage.sync.set({
-
+            aims
         });
+        inback();
     }
 
     const NewAimStorage = (() => {

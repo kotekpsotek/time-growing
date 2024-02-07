@@ -16,6 +16,7 @@
     "@sveltejs/adapter-auto": "^3.0.0",
     "@sveltejs/kit": "^2.0.0",
     "@sveltejs/vite-plugin-svelte": "^3.0.0",
+    "@types/lodash": "^4.14.202",
     "autoprefixer": "^10.4.16",
     "postcss": "^8.4.32",
     "postcss-load-config": "^5.0.2",
@@ -29,6 +30,8 @@
   },
   "type": "module",
   "dependencies": {
-    "carbon-icons-svelte": "^12.4.2"
+    "@types/chrome": "^0.0.260",
+    "carbon-icons-svelte": "^12.4.2",
+    "lodash": "^4.17.21"
   }
 }
