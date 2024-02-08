@@ -6,16 +6,14 @@
     import { fade } from "svelte/transition";
     import { CloseOutline, TaskAdd, TrashCan } from "carbon-icons-svelte";
     import Helper from "./parts/Helper.svelte";
-    import loadash from "lodash"
+    import loadash from "lodash";
+    import { aims } from "../store/statefull";
 
     type ID = string | undefined;
     type FocusOnDeleteButton = boolean;
     
+    let tracCanSize = 20 as 24;
     const showDelete: Writable<[boolean, ID, FocusOnDeleteButton]> = writable([false, undefined, false]);
-    let aims: { [id: string]: number | undefined } = {};
-    (async () => {
-        aims = (await chrome.storage.sync.get("aims"))["aims"]
-    })()
 
     const inback = () => {
         $currentScreen = "newcomer"
@@ -24,7 +22,7 @@
     async function back() {
         const aimsS = await chrome.storage.sync.get("aims");
 
-        if (!loadash.isEqual(aimsS, aims)) {
+        if (!loadash.isEqual(aimsS, $aims)) {
             const permission = confirm("You have made unsaved aims. By going back you will deprive yourself those. Are you sure?")
             if (permission) inback();
         }
@@ -33,10 +31,10 @@
 
     function ok() {
         // Save to Persistant storage
-        chrome.storage.sync.set({
-            aims
-        });
-        inback();
+        aims.update($aims, true)
+            .then(_ => {
+                inback();
+            });
     }
 
     const NewAimStorage = (() => {
@@ -61,7 +59,7 @@
             add() {
                 newAim.update(v => {
                     function save() {
-                        aims[v.aimData.name] = v.aimData.mins;
+                        ($aims)[v.aimData.name] = v.aimData.mins;
                         v.launched = false;
                         v.aimData = Object.assign({}, aimStartData);
                     }
@@ -121,7 +119,7 @@
                 {#if $NewAimStorage.launched}
                     <button class="font-semibold text-st-btn flex items-center gap-x-1">
                         <p>Add</p>
-                        <TaskAdd size={20}/>
+                        <TaskAdd size={tracCanSize}/>
                     </button>
                 {:else}
                     <img src="{addIcon}" alt="" width="20px" height="20px">
@@ -129,17 +127,17 @@
             </button>
         </div>
         <div class="pt-2 relative">
-            {#if aims && Object.entries(aims).length}
+            {#if aims && Object.entries($aims).length}
                 <div id="aims">
-                    {#each Object.keys(aims) as aimName, i}
+                    {#each Object.keys($aims) as aimName, i}
                         <div id="red-hair-couple" class="flex gap-x-1">
                             <button class="w-full flex justify-between bg-cardpx-1" on:mouseenter={_ => $showDelete = [true, aimName, false]} on:mouseleave={mLeaveAim}>
                                 <p class="text-st-btn max-w-1/2 font-medium py-2">{aimName}</p>
-                                <p class="max-w-5/12 text-center font-semibold py-2">{aims[aimName]} minutes</p>
+                                <p class="max-w-5/12 text-center font-semibold py-2">{$aims[aimName]} minutes</p>
                             </button>
                             {#if $showDelete[0] && $showDelete[1] == aimName}
-                                <button class="p-2 bg-zinc-700" on:mouseenter={_ => $showDelete[2] = true} on:mouseleave={_ => $showDelete = [false, undefined, false]} on:click={_ => { delete aims[aimName]; $showDelete = [false, undefined, false] }}>
-                                    <TrashCan size={22} fill="white"/>
+                                <button class="p-2 bg-zinc-700" on:mouseenter={_ => $showDelete[2] = true} on:mouseleave={_ => $showDelete = [false, undefined, false]} on:click={_ => { delete $aims[aimName]; $showDelete = [false, undefined, false] }}>
+                                    <TrashCan size={tracCanSize} fill="white"/>
                                 </button>
                             {/if}
                         </div>
