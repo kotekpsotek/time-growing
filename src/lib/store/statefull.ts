@@ -1,9 +1,8 @@
-import { writable } from "svelte/store";
+import { writable, derived } from "svelte/store";
 
-interface AimType { [id: string]: number | undefined };
+export interface AimType { [id: string]: number | undefined };
 let chrome: Record<string, any> = {}
 
-export const currentScreen = writable<"newcomer" | "defineaims" | "launch_screen">("newcomer");
 export const aims = (() => {
     const a = writable<AimType>({});
 
@@ -29,6 +28,54 @@ export const aims = (() => {
             }
 
             a.update(_ => v);
+        },
+        get(persistant: boolean = false) {
+            let vReturn: AimType = {}
+            if (!persistant) {
+                a.update(cV => {
+                    vReturn = cV;
+                    return cV;
+                })
+                // return v;
+            }
+            else {
+                vReturn = chrome?.storage?.sync?.get("aims")
+                    .then((v: AimType) => v)?.["aims"]
+            }
+
+            return vReturn || {};
+        }
+    }
+})();
+
+export const currentScreen = (() => {
+    const c = writable<"newcomer" | "defineaims" | "productivity">();
+    
+    // Loading initial
+    const a = aims.get(true) || {};
+    
+    c.update(v => {
+        if (Object.keys(a).length) {
+            return "productivity";
+        }
+        else return "newcomer";
+    })
+
+    return {
+        ...c,
+        /**
+         * @description Perform one step back on preview
+        */
+        goback() {
+            const aimsC = aims.get(true) || {};
+            c.update(v => {
+                if (!Object.keys(aimsC).length) {
+                    v = "newcomer"
+                }
+                else v = "productivity"
+
+                return v;
+            })
         }
     }
 })();
