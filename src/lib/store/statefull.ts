@@ -1,35 +1,34 @@
 import { writable, derived } from "svelte/store";
 
 export interface AimType { [id: string]: number | undefined };
-let chrome: Record<string, any> = {}
 
 export const aims = (() => {
     const a = writable<AimType>({});
 
-    chrome?.storage?.sync?.get("aims")
+    /* chrome.storage.sync?.get("aims")
     .then((v: AimType) => {
         a.update(vU => {
             vU = v;
             return vU;
         })
-    })
+    }) */
 
     return {
         ...a,
         /**
          * @param v 
-         * @param persistantSave - That changes will be annotate in chrome storage instantly
-         */
+            * @param persistantSave - That changes will be annotate in chrome storage instantly
+            */
         async update(v: AimType, saveByDefault: boolean = false) {
             if (saveByDefault) {
-                await chrome?.storage?.sync.set({
-                    v
-                });
+                // await chrome.storage.sync.set({
+                //     v
+                // });
             }
 
             a.update(_ => v);
         },
-        get(persistant: boolean = false) {
+        async get(persistant: boolean = false) {
             let vReturn: AimType = {}
             if (!persistant) {
                 a.update(cV => {
@@ -39,8 +38,7 @@ export const aims = (() => {
                 // return v;
             }
             else {
-                vReturn = chrome?.storage?.sync?.get("aims")
-                    .then((v: AimType) => v)?.["aims"]
+                // vReturn = (await chrome.storage.sync.get("aims"))["aims"]
             }
 
             return vReturn || {};
