@@ -2,7 +2,7 @@
 	import { aims, currentScreen } from "$lib/store/statefull";
 	import Newcomer from "$lib/screens/Newcomer.svelte";
 	import DefineAims from "$lib/screens/DefineAims.svelte";
-	// import Productivity from "$lib/screens/Productivity.svelte"
+	import Productivity from "$lib/screens/Productivity.svelte"
 	import { onMount } from "svelte";
 
 	onMount(async () => {
@@ -10,11 +10,10 @@
 	})
 </script>
 
-{#if $currentScreen == "newcomer" || $currentScreen == "productivity"}
+{#if $currentScreen == "newcomer"}
 	<Newcomer/>
-<!-- {:else if $currentScreen == "productivity"}
-	<Productivity/> -->
-<!-- {/if} -->
+{:else if $currentScreen == "productivity"}
+	<Productivity/>
 {:else if $currentScreen == "defineaims"}
 	<DefineAims/>
 {/if}
