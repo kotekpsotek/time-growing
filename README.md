@@ -10,6 +10,6 @@ Meantime you can check my [protfolio webpage](http://kotekpsotek.site)
 
 <!-- ⌛ongoing -->
 1. GUI Skew (Figma) - **✅ succeed**,
-2. GUI - **❌ not approached**,
+2. GUI - **⌛ ongoing**,
 3. Database - **❌ not approached**,
 4. Release  - **❌ not approached**
