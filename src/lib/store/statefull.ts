@@ -1,17 +1,21 @@
-import { writable, derived } from "svelte/store";
+import { writable, derived, type Writable } from "svelte/store";
 
 export interface AimType { [id: string]: number | undefined };
 
-export const aims = (() => {
+export const aimsInit = async () => {
     const a = writable<AimType>({});
 
-    /* chrome.storage.sync?.get("aims")
-    .then((v: AimType) => {
-        a.update(vU => {
-            vU = v;
-            return vU;
-        })
-    }) */
+    const vS = (await chrome.storage.sync.get("aims"))["aims"]
+    console.log("Readed", vS)
+
+    a.update(vU => {
+        vU = vS;
+        return vU;
+    })
+
+    a.subscribe(v => {
+        console.log("Updated", v);
+    });
 
     return {
         ...a,
@@ -21,9 +25,9 @@ export const aims = (() => {
             */
         async update(v: AimType, saveByDefault: boolean = false) {
             if (saveByDefault) {
-                // await chrome.storage.sync.set({
-                //     v
-                // });
+                await chrome.storage.sync.set({
+                    v
+                });
             }
 
             a.update(_ => v);
@@ -38,19 +42,25 @@ export const aims = (() => {
                 // return v;
             }
             else {
-                // vReturn = (await chrome.storage.sync.get("aims"))["aims"]
+                vReturn = (await chrome.storage.sync.get("aims"))["aims"]
             }
 
             return vReturn || {};
         }
     }
-})();
+};
+export const aims: Writable<ReturnType<typeof aimsInit>> = writable();
 
-export const currentScreen = (() => {
-    const c = writable<"newcomer" | "defineaims" | "productivity">();
+type TCurrentScreen = "newcomer" | "defineaims" | "productivity";
+export const currentScreenInit = () => {
+    const c = writable<TCurrentScreen>();
     
     // Loading initial
-    const a = aims.get(true) || {};
+    let a: any;
+    aims.update(v => {
+        a = v || {};
+        return v;
+    });
     
     c.update(v => {
         if (Object.keys(a).length) {
@@ -65,9 +75,15 @@ export const currentScreen = (() => {
          * @description Perform one step back on preview
         */
         goback() {
-            const aimsC = aims.get(true) || {};
+            // const aimsC = aims.get(true) || {};
+            let a: any;
+            aims.update(v => {
+                a = v || {};
+                return v;
+            });
+
             c.update(v => {
-                if (!Object.keys(aimsC).length) {
+                if (!Object.keys(a).length) {
                     v = "newcomer"
                 }
                 else v = "productivity"
@@ -76,4 +92,5 @@ export const currentScreen = (() => {
             })
         }
     }
-})();
+}
+export let currentScreen: Writable<ReturnType<typeof currentScreenInit>> = writable();

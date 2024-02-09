@@ -3,7 +3,9 @@
     import { currentScreen } from "$lib/store/statefull";
 
 	function switchScreen() {
-		$currentScreen = "defineaims";
+		$currentScreen.update(_ => {
+            return "defineaims";
+        });
 	}
 </script>
 
