@@ -9,6 +9,8 @@
     import loadash from "lodash"
     import { onMount } from "svelte";
 
+    let sizeIco = 22 as 20;
+    
     type ID = string | undefined;
     type FocusOnDeleteButton = boolean;
     
@@ -122,7 +124,7 @@
                 {#if $NewAimStorage.launched}
                     <button class="font-semibold text-st-btn flex items-center gap-x-1">
                         <p>Add</p>
-                        <TaskAdd size={20}/>
+                        <TaskAdd size={sizeIco}/>
                     </button>
                 {:else}
                     <img src="{addIcon}" alt="" width="20px" height="20px">
@@ -140,7 +142,7 @@
                             </button>
                             {#if $showDelete[0] && $showDelete[1] == aimName}
                                 <button class="p-2 bg-zinc-700" on:mouseenter={_ => $showDelete[2] = true} on:mouseleave={_ => $showDelete = [false, undefined, false]} on:click={_ => { delete aims[aimName]; $showDelete = [false, undefined, false] }}>
-                                    <TrashCan size={22} fill="white"/>
+                                    <TrashCan size={sizeIco} fill="white"/>
                                 </button>
                             {/if}
                         </div>
@@ -155,7 +157,7 @@
                     </div>
                     <button class="absolute right-0 text-red-700 mt-10 flex items-center gap-x-1 font-semibold" on:click={NewAimStorage.cancel}>
                         <p>Close</p>
-                        <CloseOutline size={20}/>
+                        <CloseOutline size={sizeIco}/>
                     </button>
                 </div>
             {/if}
