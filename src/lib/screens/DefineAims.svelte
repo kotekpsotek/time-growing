@@ -7,22 +7,20 @@
     import { CloseOutline, TaskAdd, TrashCan } from "carbon-icons-svelte";
     import Helper from "./parts/Helper.svelte";
     import loadash from "lodash"
+    import { onMount } from "svelte";
 
     type ID = string | undefined;
     type FocusOnDeleteButton = boolean;
     
     const showDelete: Writable<[boolean, ID, FocusOnDeleteButton]> = writable([false, undefined, false]);
     let aims: { [id: string]: number | undefined } = {};
-    (async () => {
-        aims = (await chrome.storage.sync.get("aims"))["aims"]
-    })()
 
     const inback = () => {
         $currentScreen = "newcomer"
     }
 
     async function back() {
-        const aimsS = await chrome.storage.sync.get("aims");
+        const aimsS = (await chrome.storage.sync.get("aims"))["aims"] || {};
 
         if (!loadash.isEqual(aimsS, aims)) {
             const permission = confirm("You have made unsaved aims. By going back you will deprive yourself those. Are you sure?")
@@ -99,7 +97,6 @@
 
     function mLeaveAim() {
         setTimeout(() => {
-            console.log($showDelete)
             showDelete.update(v => {
                 if (!v[2]) {
                     v = [false, undefined, false];
@@ -108,6 +105,10 @@
             })
         })
     }
+
+    onMount(async () => {
+        aims = (await chrome.storage.sync.get("aims"))["aims"] || {}
+    })
 </script>
 <div class="w-aims h-aims relative overflow-hidden">
     <ActionBar>
