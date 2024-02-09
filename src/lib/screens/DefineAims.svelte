@@ -1,13 +1,13 @@
 <script lang="ts">
     import ActionBar from "./parts/ActionBar.svelte";
     import addIcon from "../icons/add.svg";
-    import { currentScreen, type AimType } from "../store/statefull";
+    import { currentScreen } from "../store/statefull";
     import { writable, type Writable } from "svelte/store";
     import { fade } from "svelte/transition";
     import { CloseOutline, TaskAdd, TrashCan } from "carbon-icons-svelte";
     import Helper from "./parts/Helper.svelte";
     import loadash from "lodash";
-    import { aims } from "../store/statefull";
+    // import { aims } from "../store/statefull";
     import { onDestroy, onMount } from "svelte";
 
     type ID = string | undefined;
@@ -17,7 +17,6 @@
     const showDelete: Writable<[boolean, ID, FocusOnDeleteButton]> = writable([false, undefined, false]);
 
     let currentScreenX = $currentScreen;
-    $: aimsX = undefined as any as Awaited<typeof $aims>;
 
     type TNewAimStorage = [{ aimData: { name: string, mins: number }, launched: boolean, nameElement: null | HTMLInputElement }, AimType]
     const NewAimStorage = (() => {
