@@ -1,21 +1,15 @@
 <script lang="ts">
-	import { currentScreenInit, currentScreen } from "$lib/store/statefull";
+	import { currentScreen } from "$lib/store/statefull";
 	import Newcomer from "$lib/screens/Newcomer.svelte";
 	import DefineAims from "$lib/screens/DefineAims.svelte";
 	import Productivity from "$lib/screens/Productivity.svelte"
-    import { onMount } from "svelte";
-
-	onMount(() => {
-		$currentScreen = currentScreenInit();
-		
-	});
 </script>
 
-{#if $screen == "newcomer" || $screen == "productivity"}
+{#if $currentScreen == "newcomer" || $currentScreen == "productivity"}
 	<Newcomer/>
-<!-- {:else if $screen == "productivity"}
+<!-- {:else if $currentScreen == "productivity"}
 	<Productivity/> -->
 <!-- {/if} -->
-{:else if $screen == "defineaims"}
+{:else if $currentScreen == "defineaims"}
 	<DefineAims/>
 {/if}

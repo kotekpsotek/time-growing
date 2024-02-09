@@ -6,67 +6,88 @@
     import { fade } from "svelte/transition";
     import { CloseOutline, TaskAdd, TrashCan } from "carbon-icons-svelte";
     import Helper from "./parts/Helper.svelte";
-    import loadash from "lodash";
-    // import { aims } from "../store/statefull";
-    import { onDestroy, onMount } from "svelte";
+    import loadash from "lodash"
+    import { onMount } from "svelte";
 
+    let sizeIco = 22 as 20;
+    
     type ID = string | undefined;
     type FocusOnDeleteButton = boolean;
     
-    let tracCanSize = 20 as 24;
     const showDelete: Writable<[boolean, ID, FocusOnDeleteButton]> = writable([false, undefined, false]);
+    let aims: { [id: string]: number | undefined } = {};
 
-    let aims: { [i: string]: any } = {  }
-    let currentScreenX = $currentScreen;
+    const inback = () => {
+        $currentScreen = "newcomer"
+    }
 
-    type TNewAimStorage = [{ aimData: { name: string, mins: number }, launched: boolean, nameElement: null | HTMLInputElement }, typeof aims]
+    async function back() {
+        const aimsS = (await chrome.storage.sync.get("aims"))["aims"] || {};
+
+        if (!loadash.isEqual(aimsS, aims)) {
+            const permission = confirm("You have made unsaved aims. By going back you will deprive yourself those. Are you sure?")
+            if (permission) inback();
+        }
+        else inback()
+    }
+
+    function ok() {
+        // Save to Persistant storage
+        chrome.storage.sync.set({
+            aims
+        });
+        inback();
+    }
+
     const NewAimStorage = (() => {
         const aimStartData = {
             name: "",
             mins: 5
         };
-        const newAim: Writable<TNewAimStorage> = writable([{
+        const newAim: Writable<{ aimData: { name: string, mins: number }, launched: boolean, nameElement: null | HTMLInputElement }> = writable({
             aimData: Object.assign({}, aimStartData),
             launched: false,
             nameElement: null
-        }, Object.assign({}, aims)]);
+        });
 
         return {
             ...newAim,
             init() {
                 newAim.update(v => {
-                    v[0].launched = true
+                    v.launched = true
                     return v;
                 });
             },
             add() {
-                function save() {
-                    $NewAimStorage[1][$NewAimStorage[0].aimData.name] = $NewAimStorage[0].aimData.mins;
-
-                    $NewAimStorage[0].launched = false;
-                    $NewAimStorage[0].aimData = Object.assign({}, aimStartData);
-                }
-                
-                if ($NewAimStorage[0].aimData.name.length) {
-                    if (Object.keys($NewAimStorage[1]).includes($NewAimStorage[0].aimData.name)) {
-                        const overridePermission = confirm(`You've same aim ${$NewAimStorage[0].aimData.name}. Would you like to override?`)
-                        
-                        if (overridePermission) {
-                            save()
-                        }
-                        else {
-                            $NewAimStorage[0].aimData.name = "";
-                            // Focus on button here
-                            $NewAimStorage[0].nameElement?.focus();
-                        }
+                newAim.update(v => {
+                    function save() {
+                        aims[v.aimData.name] = v.aimData.mins;
+                        v.launched = false;
+                        v.aimData = Object.assign({}, aimStartData);
                     }
-                    else save()
-                }
-                else alert("Pass through aim page!")
+                    
+                    if (v.aimData.name.length) {
+                        if (Object.keys(aims).includes(v.aimData.name)) {
+                            const overridePermission = confirm(`You've same aim ${v.aimData.name}. Would you like to override?`)
+                            
+                            if (overridePermission) {
+                                save()
+                            }
+                            else {
+                                v.aimData.name = "";
+                                // Focus on button here
+                                v.nameElement?.focus();
+                            }
+                        }
+                        else save()
+                    }
+                    else alert("Pass through aim page!")
+                    return v;
+                })
             },
             cancel() {
-                $NewAimStorage[0].launched = false;
-                $NewAimStorage[0].aimData = Object.create({}, aimStartData);
+                $NewAimStorage.launched = false;
+                $NewAimStorage.aimData = Object.create({}, aimStartData);
             }
         }
     })()
@@ -87,26 +108,9 @@
         })
     }
 
-    function back() {
-        if (!loadash.isEqual($NewAimStorage[1], aimsX)) {
-            const permission = confirm("You have made unsaved aims. By going back you will deprive yourself those. Are you sure?")
-            if (permission) currentScreenX.goback();
-        }
-        else currentScreenX.goback()
-    }
-
-    function ok() {
-        // Save to Persistant storage
-        aimsX.update($NewAimStorage[1], true)
-            .then(_ => {
-                console.log("Saved", $NewAimStorage[1])
-                currentScreenX.goback();
-            });
-    }
-
     onMount(async () => {
-        aimsX = await $aims;
-    });
+        aims = (await chrome.storage.sync.get("aims"))["aims"] || {}
+    })
 </script>
 <div class="w-aims h-aims relative overflow-hidden">
     <ActionBar>
@@ -116,11 +120,11 @@
     <div id="aims-sector" class="pt-6 px-2">
         <div id="one-stripe" class="flex justify-between items-center">
             <h3 class="text-2xl font-semibold">Your Aims are here:</h3>
-            <button on:click={$NewAimStorage[0].launched ? NewAimStorage.add : NewAimStorage.init}>
-                {#if $NewAimStorage[0].launched}
+            <button on:click={$NewAimStorage.launched ? NewAimStorage.add : NewAimStorage.init}>
+                {#if $NewAimStorage.launched}
                     <button class="font-semibold text-st-btn flex items-center gap-x-1">
                         <p>Add</p>
-                        <TaskAdd size={tracCanSize}/>
+                        <TaskAdd size={sizeIco}/>
                     </button>
                 {:else}
                     <img src="{addIcon}" alt="" width="20px" height="20px">
@@ -128,32 +132,32 @@
             </button>
         </div>
         <div class="pt-2 relative">
-            {#if Object.entries($NewAimStorage[1]).length}
+            {#if aims && Object.entries(aims).length}
                 <div id="aims">
-                    {#each Object.keys($NewAimStorage[1]) as aimName, i}
+                    {#each Object.keys(aims) as aimName, i}
                         <div id="red-hair-couple" class="flex gap-x-1">
                             <button class="w-full flex justify-between bg-cardpx-1" on:mouseenter={_ => $showDelete = [true, aimName, false]} on:mouseleave={mLeaveAim}>
                                 <p class="text-st-btn max-w-1/2 font-medium py-2">{aimName}</p>
-                                <p class="max-w-5/12 text-center font-semibold py-2">{$NewAimStorage[1][aimName]} minutes</p>
+                                <p class="max-w-5/12 text-center font-semibold py-2">{aims[aimName]} minutes</p>
                             </button>
                             {#if $showDelete[0] && $showDelete[1] == aimName}
-                                <button class="p-2 bg-zinc-700" on:mouseenter={_ => $showDelete[2] = true} on:mouseleave={_ => $showDelete = [false, undefined, false]} on:click={_ => { delete $NewAimStorage[1][aimName]; $showDelete = [false, undefined, false] }}>
-                                    <TrashCan size={tracCanSize} fill="white"/>
+                                <button class="p-2 bg-zinc-700" on:mouseenter={_ => $showDelete[2] = true} on:mouseleave={_ => $showDelete = [false, undefined, false]} on:click={_ => { delete aims[aimName]; $showDelete = [false, undefined, false] }}>
+                                    <TrashCan size={sizeIco} fill="white"/>
                                 </button>
                             {/if}
                         </div>
                     {/each}
                 </div>
             {/if}
-            {#if $NewAimStorage[0].launched}
+            {#if $NewAimStorage.launched}
                 <div transition:fade={{ duration: 100 }}>
                     <div class="w-full flex justify-between bg-card py-2 px-1">
-                        <input class="w-1/2" type="text" id="webpage-name-inp" placeholder="Webpage e.g. Instagram" bind:value={$NewAimStorage[0].aimData.name} use:useAutoFocus bind:this={$NewAimStorage[0].nameElement}/>
-                        <input class="w-2/12 text-center" type="number" min="5" bind:value={$NewAimStorage[0].aimData.mins}/>
+                        <input class="w-1/2" type="text" id="webpage-name-inp" placeholder="Webpage e.g. Instagram" bind:value={$NewAimStorage.aimData.name} use:useAutoFocus bind:this={$NewAimStorage.nameElement}/>
+                        <input class="w-2/12 text-center" type="number" min="5" bind:value={$NewAimStorage.aimData.mins}/>
                     </div>
                     <button class="absolute right-0 text-red-700 mt-10 flex items-center gap-x-1 font-semibold" on:click={NewAimStorage.cancel}>
                         <p>Close</p>
-                        <CloseOutline size={20}/>
+                        <CloseOutline size={sizeIco}/>
                     </button>
                 </div>
             {/if}
