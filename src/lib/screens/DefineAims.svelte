@@ -16,9 +16,10 @@
     let tracCanSize = 20 as 24;
     const showDelete: Writable<[boolean, ID, FocusOnDeleteButton]> = writable([false, undefined, false]);
 
+    let aims: { [i: string]: any } = {  }
     let currentScreenX = $currentScreen;
 
-    type TNewAimStorage = [{ aimData: { name: string, mins: number }, launched: boolean, nameElement: null | HTMLInputElement }, AimType]
+    type TNewAimStorage = [{ aimData: { name: string, mins: number }, launched: boolean, nameElement: null | HTMLInputElement }, typeof aims]
     const NewAimStorage = (() => {
         const aimStartData = {
             name: "",
@@ -28,7 +29,7 @@
             aimData: Object.assign({}, aimStartData),
             launched: false,
             nameElement: null
-        }, Object.assign({}, $aimsX)]);
+        }, Object.assign({}, aims)]);
 
         return {
             ...newAim,
