@@ -1,6 +1,9 @@
 <script lang="ts">
     import MenuBar from "./parts/MenuBar.svelte";
+    import { currentScreen } from "$lib/store/statefull";
     import Pine from "$lib/icons/pine.svg"
+    import aim from "$lib/icons/aim.svg"
+    import forest from "$lib/icons/forest.svg"
 
     type GrowthMinute = Number;
     type GrowthMeter = Number;
@@ -9,10 +12,37 @@
     let growthRatio: [GrowthMeter, GrowthMinute] = [1, 1];
     let minutesToTransform = 10;
     let timeWithoutUsageAnyP = 13
+
+    type MenuItems = {
+        name: string,
+        icon: string,
+        handler: () => void
+    }[]
+    
+    const menuItems: MenuItems = [
+        {
+            name: "My aims",
+            icon: aim,
+            handler() {
+                $currentScreen = "defineaims"
+            }
+        },
+        {
+            name: "My forest",
+            icon: forest,
+            handler() {
+                $currentScreen = "forest"
+            }
+        }
+    ];
+    let menuOpen = false;
+    function openMenu() {
+        menuOpen = !menuOpen;
+    }
 </script>
 
-<MenuBar/>
-<div class="flex flex-col justify-center items-center gap-y-4" style="width: 350px; height: 400px;">
+<MenuBar on:menu-click={openMenu}/>
+<div class="flex flex-col justify-center items-center gap-y-4 relative" style="width: 350px; height: 400px; font-family: Oxygen Bold;">
     <div id="circle-wrapper" class="flex justify-center items-center relative font-semibold">
         <div id="circle" class="flex flex-col justify-center items-center gap-y-2 text-white">
             <img src={Pine} alt="Pine Tree" width="75px" height="75px"/>
@@ -48,12 +78,21 @@
         <span class="pine-span">{timeWithoutUsageAnyP} minutes</span>
         without usage any selected page
     </p>
+    {#if menuOpen}
+        <div id="menu-right" class="absolute top-0 right-0 h-full bg-white" style="width: 200px;">
+            {#each menuItems as { name, icon, handler }}
+                <button class="flex gap-x-2 p-2" on:click={handler}>
+                    <p style="font-size: 15px;">{name}</p>
+                    <img src="{icon}" alt="" width="35px" height="35px">
+                </button>
+            {/each}
+        </div>
+    {/if}
 </div>
 
 <style>
     :root {
         --pine-span: #ACE3E0;
-        font-family: Oxygen Bold;
     }
     
     #circle-wrapper {

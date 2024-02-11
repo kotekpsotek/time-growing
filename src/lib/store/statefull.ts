@@ -1,6 +1,6 @@
 import { writable } from "svelte/store";
 
-export type Screens = "newcomer" | "defineaims" | "productivity";
+export type Screens = "newcomer" | "defineaims" | "productivity"  | "forest";
 export const currentScreen = (() => {
     const store = writable<Screens>();
 
