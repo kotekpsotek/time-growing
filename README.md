@@ -6,7 +6,7 @@ Do you feel dispersed? _or_ Do you like progress in 'focus on'? This extension i
 > ### **Status:** Product on route 🛣️ Standby and be curious🚦
 Meantime you can check my [protfolio webpage](http://kotekpsotek.site)
 
-## Roudmap (Early Version):
+## Roadmap (Lite):
 
 <!-- ⌛ongoing -->
 1. GUI Skew (Figma) - **✅ succeed**,
