@@ -1,7 +1,7 @@
 <script lang="ts">
     import ActionBar from "./parts/ActionBar.svelte";
     import addIcon from "../icons/add.svg";
-    import { currentScreen } from "../store/statefull";
+    import { currentScreen, aims as a } from "../store/statefull";
     import { writable, type Writable } from "svelte/store";
     import { fade } from "svelte/transition";
     import { CloseOutline, TaskAdd, TrashCan } from "carbon-icons-svelte";
@@ -18,7 +18,7 @@
     let aims: { [id: string]: number | undefined } = {};
 
     const inback = () => {
-        $currentScreen = "newcomer"
+        $currentScreen = Object.keys($a).length ? "productivity" : "newcomer";
     }
 
     async function back() {

@@ -2,7 +2,7 @@
     import { Menu, Close } from "carbon-icons-svelte";
     import { createEventDispatcher } from "svelte";
 
-    let menuOpen = false;
+    let menuOpen = true;
     const dsp = createEventDispatcher();
 </script>
 

@@ -52,7 +52,7 @@
                     is growing
                     <span class="pine-span">{growthTime}m...</span>
                 </p>
-                <p>
+                <p class="text-black" style="font-size: 14px;">
                     growth ratio is
                     <span class="pine-span">
                         {
@@ -83,7 +83,7 @@
             {#each menuItems as { name, icon, handler }}
                 <button class="flex gap-x-2 p-2" on:click={handler}>
                     <p style="font-size: 15px;">{name}</p>
-                    <img src="{icon}" alt="" width="35px" height="35px">
+                    <img src="{icon}" alt="" width="20px" height="20px">
                 </button>
             {/each}
         </div>
