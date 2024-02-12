@@ -1,4 +1,4 @@
-import { writable } from "svelte/store";
+import { writable, type Writable } from "svelte/store";
 
 export type Screens = "newcomer" | "defineaims" | "productivity"  | "forest";
 export const currentScreen = (() => {
@@ -37,6 +37,44 @@ export const aims = (() => {
             aims.update(v => aimsFromStorage);
 
             return aimsFromStorage;
+        }
+    }
+})();
+
+/** 
+* @description Save timestamp when aim was added (separately)
+*/
+export const aimAddTimeStamps = (() => {
+    const timestamps: Writable<Record<string, number>> = writable({});
+    
+    return {
+        ...timestamps,
+        async load() {
+            const storeV = (await chrome.storage.sync.get("timeaim"))["timeaim"] || {};
+            console.log("Saved aims", storeV)
+            timestamps.update(v => storeV);
+        },
+        add(origin: string) {
+            timestamps.update(v => {
+                // Add to local session
+                v[origin] = Date.now();
+
+                // Add to chrome storage
+                chrome.storage.sync.set({ timeaim: v });
+
+                return v;
+            })
+
+        },
+        delete(origin: string) {
+            timestamps.update(v => {
+                delete v[origin];
+
+                // Add to chrome storage
+                chrome.storage.sync.set({ timeaim: v });                
+                
+                return v;
+            })
         }
     }
 })();

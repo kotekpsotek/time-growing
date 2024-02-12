@@ -1,7 +1,7 @@
 <script lang="ts">
     import ActionBar from "./parts/ActionBar.svelte";
     import addIcon from "../icons/add.svg";
-    import { currentScreen, aims as a } from "../store/statefull";
+    import { currentScreen, aims as a, aimAddTimeStamps } from "../store/statefull";
     import { writable, type Writable } from "svelte/store";
     import { fade } from "svelte/transition";
     import { CloseOutline, TaskAdd, TrashCan } from "carbon-icons-svelte";
@@ -35,7 +35,7 @@
         // Save to Persistant storage
         chrome.storage.sync.set({
             aims
-        });
+        });        
         inback();
     }
 
@@ -62,6 +62,8 @@
                 newAim.update(v => {
                     function save() {
                         aims[v.aimData.name] = v.aimData.mins;
+                        aimAddTimeStamps.add(v.aimData.name)
+                        
                         v.launched = false;
                         v.aimData = Object.assign({}, aimStartData);
                     }
@@ -108,6 +110,14 @@
         })
     }
 
+    function deleteAim(aimName: string) {
+        return () => {
+            delete aims[aimName];
+            $showDelete = [false, undefined, false];
+            aimAddTimeStamps.delete(aimName);
+        }
+    }
+
     onMount(async () => {
         aims = (await chrome.storage.sync.get("aims"))["aims"] || {}
     })
@@ -141,7 +151,7 @@
                                 <p class="max-w-5/12 text-center font-semibold py-2">{aims[aimName]} minutes</p>
                             </button>
                             {#if $showDelete[0] && $showDelete[1] == aimName}
-                                <button class="p-2 bg-zinc-700" on:mouseenter={_ => $showDelete[2] = true} on:mouseleave={_ => $showDelete = [false, undefined, false]} on:click={_ => { delete aims[aimName]; $showDelete = [false, undefined, false] }}>
+                                <button class="p-2 bg-zinc-700" on:mouseenter={_ => $showDelete[2] = true} on:mouseleave={_ => $showDelete = [false, undefined, false]} on:click={deleteAim(aimName)}>
                                     <TrashCan size={sizeIco} fill="white"/>
                                 </button>
                             {/if}
