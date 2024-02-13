@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "Time Growing",
     "version": "1.0.0",
-    "permissions": ["storage"],
+    "permissions": ["storage", "history"],
     "background": {
         "service_worker": "background.js"
     },
