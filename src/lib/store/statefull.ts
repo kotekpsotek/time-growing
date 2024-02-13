@@ -91,7 +91,7 @@ export const aimAddTimeStamps = (() => {
 
             timestamps.update(v => {
                 for (const [originL, timeL] of Object.entries(v)) {
-                    if (originL == origin) {
+                    if (originL == origin || origin.includes(origin)) {
                         time = timeL
                         break;
                     }
@@ -123,12 +123,12 @@ export const lastUsages = (() => {
         async load() {
             // Auto update system
             chrome.history.onVisited.addListener(historyItem => {
-                const hItemName = historyItem.title || "";
+                const hItemName = historyItem.url || "";
                 
                 // Only when user has such aim defined means user breaks aim target
                 if (aimAddTimeStamps.get(hItemName)) {
                     u.update(c => {
-                        const id = c.findIndex(v => v.origin == hItemName);
+                        const id = c.findIndex(v => v.origin == hItemName || hItemName.includes(v.origin));
 
                         // Reset lasting to now
                         if (id >= 0) {

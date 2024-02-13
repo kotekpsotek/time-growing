@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { lastUsages } from "../lib/store/statefull";
+import { aimAddTimeStamps, lastUsages } from "../lib/store/statefull";
 import { TimeMeasurement } from "../lib/index";
 
 beforeAll(() => {
@@ -22,6 +22,13 @@ beforeAll(() => {
                 timestamp: 1900000
             },
         ]
+    });
+
+    // ..
+    aimAddTimeStamps.update(v => {
+        return {
+            "https://www.amazon.com/": 1000 
+        }
     })
 });
 
@@ -43,6 +50,12 @@ describe("Storages unit testing", () => {
 
             return v;
         })
+    });
+
+    it("Aim born timestams get one origin", () => {
+        const origin = aimAddTimeStamps.get("amazon.com");
+
+        expect(origin).toBeTruthy();
     });
 });
 
