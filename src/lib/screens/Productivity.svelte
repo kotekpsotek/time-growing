@@ -5,6 +5,7 @@
     import aim from "$lib/icons/aim.svg"
     import forest from "$lib/icons/forest.svg"
     import { onMount } from "svelte";
+    import { TimeMeasurement } from "$lib";
 
     type GrowthMinute = Number;
     type GrowthMeter = Number;
@@ -12,7 +13,10 @@
     let growthTime = 13;
     let growthRatio: [GrowthMeter, GrowthMinute] = [1, 1];
     let minutesToTransform = 10;
-    let timeWithoutUsageAnyP = 0;
+    const timeWithoutUsageAnyP = {
+        time: 0,
+        formatted: ""
+    }
     
     type MenuItems = {
         name: string,
@@ -42,8 +46,16 @@
     }
 
     lastUsages.subscribe(v => {
-        timeWithoutUsageAnyP = lastUsages.recentUsageTimestamp(v);
-        console.log(timeWithoutUsageAnyP, v)
+        timeWithoutUsageAnyP.time = lastUsages.recentUsageTimestamp(v)
+        timeWithoutUsageAnyP.formatted = new TimeMeasurement(timeWithoutUsageAnyP.time)
+            .format();
+    })
+
+    onMount(() => {
+        setInterval(() => {
+            timeWithoutUsageAnyP.formatted = new TimeMeasurement(timeWithoutUsageAnyP.time)
+                .format();
+        })
     })
 </script>
 
@@ -81,7 +93,7 @@
         </div>
     </div>
     <p id="time-non-usage" class="font-bold">
-        <span class="pine-span">{timeWithoutUsageAnyP} minutes</span>
+        <span class="pine-span">{timeWithoutUsageAnyP.formatted}</span>
         without usage any selected page
     </p>
     {#if menuOpen}

@@ -1,5 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { lastUsages } from "../lib/store/statefull";
+import { TimeMeasurement } from "../lib/index";
 
 beforeAll(() => {
     lastUsages.update(v => {
@@ -44,3 +45,10 @@ describe("Storages unit testing", () => {
         })
     });
 });
+
+describe("API Interfaces", () => {
+    it("Time formating", () => {
+        const mes = new TimeMeasurement(Date.now() - 87000 * 1000);
+        console.log(mes.format())
+    })
+})
