@@ -7,7 +7,8 @@
     "build": "vite build && rollup -c",
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+    "test": "vitest"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^25.0.7",
@@ -32,6 +33,7 @@
   "dependencies": {
     "@types/chrome": "^0.0.260",
     "carbon-icons-svelte": "^12.4.2",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "vitest": "^1.2.2"
   }
 }
