@@ -24,8 +24,9 @@ export class TimeMeasurement {
     }
 
     format(): string {
-        return `
+        const f = `
             ${this.days ? this.days + "d" : ""} ${this.hours ? this.hours + "h" : ""} ${this.mins ? this.mins  + "m" : ""} ${this.secs ? this.secs +"s" : ""}
         `.trim().replaceAll(/\s{2,}/gi, " ")
+        return f.length ? f : "0s";
     }
 }
