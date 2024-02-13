@@ -1,7 +1,7 @@
 <script lang="ts">
     import ActionBar from "./parts/ActionBar.svelte";
     import addIcon from "../icons/add.svg";
-    import { currentScreen, aims as a, aimAddTimeStamps } from "../store/statefull";
+    import { currentScreen, aims as a, aimAddTimeStamps, lastUsages } from "../store/statefull";
     import { writable, type Writable } from "svelte/store";
     import { fade } from "svelte/transition";
     import { CloseOutline, TaskAdd, TrashCan } from "carbon-icons-svelte";
@@ -62,7 +62,8 @@
                 newAim.update(v => {
                     function save() {
                         aims[v.aimData.name] = v.aimData.mins;
-                        aimAddTimeStamps.add(v.aimData.name)
+                        aimAddTimeStamps.add(v.aimData.name);
+                        lastUsages.saveLastUsage(v.aimData.name);
                         
                         v.launched = false;
                         v.aimData = Object.assign({}, aimStartData);
@@ -115,6 +116,7 @@
             delete aims[aimName];
             $showDelete = [false, undefined, false];
             aimAddTimeStamps.delete(aimName);
+            lastUsages.deleteLastUsage(aimName);
         }
     }
 

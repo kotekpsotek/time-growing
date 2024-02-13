@@ -1,9 +1,10 @@
 <script lang="ts">
     import MenuBar from "./parts/MenuBar.svelte";
-    import { currentScreen } from "$lib/store/statefull";
+    import { currentScreen, lastUsages } from "$lib/store/statefull";
     import Pine from "$lib/icons/pine.svg"
     import aim from "$lib/icons/aim.svg"
     import forest from "$lib/icons/forest.svg"
+    import { onMount } from "svelte";
 
     type GrowthMinute = Number;
     type GrowthMeter = Number;
@@ -11,8 +12,8 @@
     let growthTime = 13;
     let growthRatio: [GrowthMeter, GrowthMinute] = [1, 1];
     let minutesToTransform = 10;
-    let timeWithoutUsageAnyP = 13
-
+    let timeWithoutUsageAnyP = 0;
+    
     type MenuItems = {
         name: string,
         icon: string,
@@ -39,6 +40,11 @@
     function openMenu() {
         menuOpen = !menuOpen;
     }
+
+    lastUsages.subscribe(v => {
+        timeWithoutUsageAnyP = lastUsages.recentUsageTimestamp(v);
+        console.log(timeWithoutUsageAnyP, v)
+    })
 </script>
 
 <MenuBar on:menu-click={openMenu}/>

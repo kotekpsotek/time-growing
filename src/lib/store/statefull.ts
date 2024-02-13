@@ -117,12 +117,10 @@ interface LastUsage {
 type LastUsageList = LastUsage[];
 export const lastUsages = (() => {
     const u = writable<LastUsageList>([]);
-
+    
     return {
         ...u,
         async load() {
-            const originsList: LastUsageList = [];
-
             // Auto update system
             chrome.history.onVisited.addListener(historyItem => {
                 const hItemName = historyItem.title || "";
@@ -137,65 +135,46 @@ export const lastUsages = (() => {
                             c[id].timestamp = Date.now()
                         }
                         
+                        chrome.storage.sync.set({"lastusages": c});
                         return c;
                     })
                 }
             })
             
-            // Loading operation depends on aim set definition (content)
-            aims.update(v => {
-                // Over each aims
-                for (const [origin, lastingTime] of Object.entries(v)) {
-                    // Check last aim origin visit time
-                    chrome.history.getVisits({ url: new URL(origin).toString() })
-                    .then(h => {
-                        const lastVisitTime = h.reduce((p, c) => {
-                            return (p.visitTime || 0) > (c.visitTime || 0) ? p : c;
-                        }).visitTime || 0;
-                        const thisAimBornTime = aimAddTimeStamps.get(origin);
-
-                        // Time last visit determine how much user is lating in aim completing
-                        if (lastVisitTime > thisAimBornTime) {
-                            originsList.push(
-                                {
-                                    origin,
-                                    timestamp: lastVisitTime
-                                }
-                            )
-                        }
-                        else {
-                            // Here user has borken aim
-                            originsList.push(
-                                {
-                                    origin,
-                                    timestamp: Date.now()
-                                }
-                            )
-                        }
-                    });
-                }
-                
-                return v;
-            });
-
-            // Update
-            u.update(up_v => originsList);
-
-            console.log(originsList)
+            // Load last usage state from persistant storage
+            const cd = (await chrome.storage.sync.get("lastusages"))["lastusages"] || [];
+            u.update(c => cd);
         },
         /**
          * @description Get recent usage from all aims timeline
          * @returns 
          */
-        recentUsageTimestamp() {
+        recentUsageTimestamp(usage: LastUsageList) {
             let recent: number = 0;
 
-            u.update(v => {
-                recent = v.reduce((p, c) => p.timestamp > c.timestamp ? p : c).timestamp
-                return v;
-            });
+            recent = usage.reduce((p, c) => p.timestamp > c.timestamp ? p : c, { timestamp: 0, origin: "new" }).timestamp
             
             return recent;
+        },
+        /**
+         * @description Save last usage e.g. when user is enshrining new aim
+        */
+        saveLastUsage(origin: string) {
+            u.update(v => {
+                v.push({
+                    origin,
+                    timestamp: Date.now()
+                })
+                chrome.storage.sync.set({"lastusages": v});
+                return v;
+            })
+        },
+        deleteLastUsage(origin: string) {
+            u.update(v => {
+                v.splice(v.findIndex(v => v.origin == origin), 1);
+                chrome.storage.sync.set({"lastusages": v});
+                return v;
+            })
         }
     }
 })()

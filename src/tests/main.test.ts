@@ -33,10 +33,14 @@ describe("Storages unit testing", () => {
     })
 
     it("lastUsage recent timestamp", () => {
-        const lastU = lastUsages.recentUsageTimestamp();
-        
-        console.log("Last usage was in", lastU);
+        lastUsages.update(v => {
+            const lastU = lastUsages.recentUsageTimestamp(v);
+            
+            console.log("Last usage was in", lastU);
+    
+            expect(lastU).toBeGreaterThan(0);
 
-        expect(lastU).toBeGreaterThan(0);
+            return v;
+        })
     });
 });
