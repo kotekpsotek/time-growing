@@ -209,17 +209,21 @@ export const timeToTreeGain = (() => {
             // MS difference in timestamp            
             c.update(actualState => {
                 // Fullfill history when empty
-                if (!actualState.history.length) {
+                if (!actualState?.history.length) {
                     actualState.history.push({
                         treeType: "None",
                         timestamp: actualUTim
                     });
+                    // console.log("Enter timestamp", actualUTim)
                 }
 
+                // Sort
+                actualState.history = actualState.history.sort((a, b) => a.timestamp - b.timestamp)
+                
                 // Calculation How much time last from when last tree grown
                 const lastHist = actualState.history[actualState.history.length - 1];
-                const howMuchTimeLastMs = Date.now() - lastHist.timestamp;
-                console.log(howMuchTimeLastMs, lastHist.timestamp, howMuchTimeLastMs >= growthTimeTimeStamp)
+                // console.log("Last history timestamp: ", Date.now(), lastHist.timestamp, "\n", "Defference:", Date.now() - lastHist.timestamp, )
+                const howMuchTimeLastMs = Date.now() - lastHist?.timestamp;
                 
                 // Add new tree/s to forest
                 if (howMuchTimeLastMs >= growthTimeTimeStamp) {
@@ -228,13 +232,20 @@ export const timeToTreeGain = (() => {
                     for (let i = treesNum; i > 0; i--) {
                         actualState.history.push({
                             treeType: treeType,
-                            timestamp: Date.now() - (i * growthTimeTimeStamp) 
+                            timestamp: Date.now() - ((i != 1) ? (i * growthTimeTimeStamp) : 0) // Memorial for my time: (Math + Logical mistake) =>
+                            //                                                                    Here was mistake whose take mine few hours 
+                            //                                                                    Description: While's only one tree or is a last tree from a current date difference shouldn't be removing standby to growth time (growthTimeTimeStamp) because such notion exists only for a past tries occurenes but not for a current tries
                         })
                     }
                 }
                 
+                // Save occurances in storage
+                chrome.storage.sync.set({
+                    "tree-time": { ...actualState }
+                });
+
                 return actualState;
-            })
+            });
         },
         /**
          * @description This method always will **return time to next tree growth**. ***Warning Working Proof:*** Method does not refill ungrowth trees, use for that `updateT()` method
@@ -244,7 +255,7 @@ export const timeToTreeGain = (() => {
             let timeTo = 0;
 
             c.update(v => {
-                const last = v.history[v.history.length - 1].timestamp;
+                const last = v.history[v.history.length - 1]?.timestamp || 0;
                 const diffHist = Date.now() - last;
                 
                 timeTo = growthTimeTimeStamp - diffHist % growthTimeTimeStamp

@@ -53,6 +53,7 @@
     onMount(() => {
         // 
         setTimeout(() => {
+            console.log(Date.now(), timeWithoutUsageAnyP.time)
             timeToTreeGain.updateT(timeWithoutUsageAnyP.time, { growthTimeTimeStamp: 1000 * 60 * 10 * 10, type: "Pine" })
             
             setInterval(() => {
