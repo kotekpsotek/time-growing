@@ -16,6 +16,7 @@
         time: 0,
         formatted: ""
     }
+    const growthTimeTimeStamp = 1_000 * 60; // 1 minute
     
     type MenuItems = {
         name: string,
@@ -50,14 +51,29 @@
             .format();
     })
 
+    function timeToNextGrowth(node: HTMLSpanElement) {
+        const setupContent = () => {
+            node.textContent = (Math.round(timeToTreeGain.getTimeTo({ growthTimeTimeStamp, type: "None" }) / 1_000)) 
+                .toString() + "s";
+        };
+
+        // For current
+        setupContent();
+
+        // For new
+        setInterval(() => setupContent());
+
+        return {}
+    }
+
     onMount(() => {
         // 
         setTimeout(() => {
             console.log(Date.now(), timeWithoutUsageAnyP.time)
-            timeToTreeGain.updateT(timeWithoutUsageAnyP.time, { growthTimeTimeStamp: 1000 * 60 * 10 * 10, type: "Pine" })
+            timeToTreeGain.updateT(timeWithoutUsageAnyP.time, { growthTimeTimeStamp, type: "Pine" })
             
             setInterval(() => {
-                timeToTreeGain.updateT(Date.now(), { growthTimeTimeStamp: 1000 * 60 * 10 * 10, type: "Pine" });
+                timeToTreeGain.updateT(Date.now(), { growthTimeTimeStamp, type: "Pine" });
                 console.log($timeToTreeGain.history, $timeToTreeGain.history.length)
             }, 10_000)
         }, 5_000)
@@ -102,7 +118,7 @@
             </div>
         </div>
         <div id="label" class="bg-white rounded-md p-2">
-            <p class="pine-span">In <span style="font-weight: bold;">{timeToTreeGain.getTimeTo({ growthTimeTimeStamp: 20_000, type: "None" })}s</span> will be transforming to <span style="font-weight: bold;">oak</span></p>
+            <p class="pine-span">In <span style="font-weight: bold;" use:timeToNextGrowth></span> will be transforming to <span style="font-weight: bold;">Pine</span></p>
         </div>
     </div>
     <p id="time-non-usage" class="font-bold">
