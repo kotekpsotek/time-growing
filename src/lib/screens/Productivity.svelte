@@ -67,16 +67,15 @@
     }
 
     onMount(() => {
-        // 
+        // Loading tries row and 
         setTimeout(() => {
-            console.log(Date.now(), timeWithoutUsageAnyP.time)
             timeToTreeGain.updateT(timeWithoutUsageAnyP.time, { growthTimeTimeStamp, type: "Pine" })
-            
-            setInterval(() => {
-                timeToTreeGain.updateT(Date.now(), { growthTimeTimeStamp, type: "Pine" });
-                console.log($timeToTreeGain.history, $timeToTreeGain.history.length)
-            }, 10_000)
-        }, 5_000)
+        }, 100)
+
+        // Updating forest
+        setInterval(() => {
+            timeToTreeGain.updateT(Date.now(), { growthTimeTimeStamp, type: "Pine" });
+        }, growthTimeTimeStamp)
         
         setInterval(() => {
             // 
