@@ -178,3 +178,78 @@ export const lastUsages = (() => {
         }
     }
 })()
+
+// TODO:
+export interface TreeType {
+    type: "Pine" | "None",
+    growthTimeTimeStamp: number   
+}
+interface TimeTreeGain {
+    /** When last tree was gained */
+    history: {
+        treeType: string,
+        timestamp: number
+    }[]
+}
+export const timeToTreeGain = (() => {
+    const c = writable<TimeTreeGain>({ history: [] });
+    
+    return {
+        ...c,
+        async load() {
+            const treeTime = (await chrome.storage.sync.get("tree-time"))['tree-time'];
+            c.update(_ => treeTime);
+        },
+        /**
+         * 
+         * @param actualUTim - time from last any forebidden page usage
+         */
+        // I would like to pass 
+        updateT(actualUTim: number, { growthTimeTimeStamp, type: treeType }: TreeType) {
+            // MS difference in timestamp            
+            c.update(actualState => {
+                // Fullfill history when empty
+                if (!actualState.history.length) actualState.history.push({
+                    treeType: "None",
+                    timestamp: actualUTim
+                });
+
+                // Calculation How much time last from when last tree grown
+                const lastHist = actualState.history[actualState.history.length - 1];
+                const howMuchTimeLastMs = Date.now() - lastHist.timestamp;
+                
+                // Add new tree/s to forest
+                if (howMuchTimeLastMs >= growthTimeTimeStamp) {
+                    const treesNum = Math.floor(howMuchTimeLastMs / growthTimeTimeStamp);
+
+                    for (let i = treesNum; i > 0; i--) {
+                        actualState.history.push({
+                            treeType: treeType,
+                            timestamp: Date.now() - (i * growthTimeTimeStamp) 
+                        })
+                    }
+                }
+                
+                return actualState;
+            })
+        },
+        /**
+         * @description This method always will **return time to next tree growth**. ***Warning Working Proof:*** Method does not refill ungrowth trees, use for that `updateT()` method
+         * @param param0 
+         */
+        getTimeTo({ growthTimeTimeStamp }: TreeType): number {
+            let timeTo = 0;
+
+            c.update(v => {
+                const last = v.history[v.history.length - 1].timestamp;
+                const diffHist = Date.now() - last;
+                
+                timeTo = growthTimeTimeStamp - diffHist % growthTimeTimeStamp
+                
+                return v;
+            })
+            
+            return timeTo;
+        }
+    }
+})()

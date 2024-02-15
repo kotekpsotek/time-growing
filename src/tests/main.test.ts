@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { aimAddTimeStamps, lastUsages } from "../lib/store/statefull";
+import { aimAddTimeStamps, lastUsages, timeToTreeGain, type TreeType } from "../lib/store/statefull";
 import { TimeMeasurement } from "../lib/index";
 
 beforeAll(() => {
@@ -30,6 +30,18 @@ beforeAll(() => {
             "https://www.amazon.com/": 1000 
         }
     })
+
+    // .. Time to grain
+    timeToTreeGain.update(v => {
+        return { // To growth one tree is required 20s
+            history: [
+                {
+                    treeType: "Pine",
+                    timestamp: Date.now() - 45_000 // 20s ago
+                }
+            ]
+        }
+    });
 });
 
 describe("Storages unit testing", () => {
@@ -58,6 +70,35 @@ describe("Storages unit testing", () => {
         expect(origin).toBeTruthy();
     });
 });
+
+
+describe("Time to tree growth advanced calculation", () => {
+    const growthParam = { growthTimeTimeStamp: 20_000, type: "Pine" } as TreeType;
+    
+    it("Method #1: How much time last to growth -> Always will return time remanding to next growth\n\t(Before refill)", () => {
+        const result = timeToTreeGain.getTimeTo(growthParam)
+        
+        expect(result).toBeGreaterThan(14970)
+        expect(result).to.be.lessThan(15000)
+    });
+
+    it("Method #2: How much time last to growth -> Always will return time remanding to next growth\n\t(After refill)", () => {
+        // Before 
+        timeToTreeGain.updateT(Date.now(), growthParam)
+        
+        // After
+        const result = timeToTreeGain.getTimeTo(growthParam)
+        
+        expect(result).toBeGreaterThan(19995)
+        expect(result).to.be.lessThan(20003)
+    });
+
+    it("Deleting from current time", () => {
+        const lastUsage = Date.now(); // 5s ago
+        timeToTreeGain.updateT(lastUsage, growthParam);
+        // console.log(timeToTreeGain.getTimeTo())
+    })
+})
 
 describe("API Interfaces", () => {
     it("Time formating", () => {
