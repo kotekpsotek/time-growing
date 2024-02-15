@@ -1,6 +1,6 @@
 <script lang="ts">
     import MenuBar from "./parts/MenuBar.svelte";
-    import { currentScreen, lastUsages } from "$lib/store/statefull";
+    import { currentScreen, lastUsages, timeToTreeGain } from "$lib/store/statefull";
     import Pine from "$lib/icons/pine.svg"
     import aim from "$lib/icons/aim.svg"
     import forest from "$lib/icons/forest.svg"
@@ -12,7 +12,6 @@
 
     let growthTime = 13;
     let growthRatio: [GrowthMeter, GrowthMinute] = [1, 1];
-    let minutesToTransform = 10;
     const timeWithoutUsageAnyP = {
         time: 0,
         formatted: ""
@@ -44,7 +43,7 @@
     function openMenu() {
         menuOpen = !menuOpen;
     }
-
+    
     lastUsages.subscribe(v => {
         timeWithoutUsageAnyP.time = lastUsages.recentUsageTimestamp(v)
         timeWithoutUsageAnyP.formatted = new TimeMeasurement(timeWithoutUsageAnyP.time)
@@ -52,9 +51,22 @@
     })
 
     onMount(() => {
+        // 
+        setTimeout(() => {
+            timeToTreeGain.updateT(timeWithoutUsageAnyP.time, { growthTimeTimeStamp: 1000 * 60 * 10 * 10, type: "Pine" })
+            
+            setInterval(() => {
+                timeToTreeGain.updateT(Date.now(), { growthTimeTimeStamp: 1000 * 60 * 10 * 10, type: "Pine" });
+                console.log($timeToTreeGain.history, $timeToTreeGain.history.length)
+            }, 10_000)
+        }, 5_000)
+        
         setInterval(() => {
+            // 
             timeWithoutUsageAnyP.formatted = new TimeMeasurement(timeWithoutUsageAnyP.time)
                 .format();
+
+            // 
         })
     })
 </script>
@@ -89,7 +101,7 @@
             </div>
         </div>
         <div id="label" class="bg-white rounded-md p-2">
-            <p class="pine-span">In <span style="font-weight: bold;">{minutesToTransform}m</span> will be transforming to <span style="font-weight: bold;">oak</span></p>
+            <p class="pine-span">In <span style="font-weight: bold;">{timeToTreeGain.getTimeTo({ growthTimeTimeStamp: 20_000, type: "None" })}s</span> will be transforming to <span style="font-weight: bold;">oak</span></p>
         </div>
     </div>
     <p id="time-non-usage" class="font-bold">

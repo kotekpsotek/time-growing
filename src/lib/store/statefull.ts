@@ -197,7 +197,7 @@ export const timeToTreeGain = (() => {
     return {
         ...c,
         async load() {
-            const treeTime = (await chrome.storage.sync.get("tree-time"))['tree-time'];
+            const treeTime: TimeTreeGain = (await chrome.storage.sync.get("tree-time"))['tree-time'] || { history: [] };
             c.update(_ => treeTime);
         },
         /**
@@ -209,14 +209,17 @@ export const timeToTreeGain = (() => {
             // MS difference in timestamp            
             c.update(actualState => {
                 // Fullfill history when empty
-                if (!actualState.history.length) actualState.history.push({
-                    treeType: "None",
-                    timestamp: actualUTim
-                });
+                if (!actualState.history.length) {
+                    actualState.history.push({
+                        treeType: "None",
+                        timestamp: actualUTim
+                    });
+                }
 
                 // Calculation How much time last from when last tree grown
                 const lastHist = actualState.history[actualState.history.length - 1];
                 const howMuchTimeLastMs = Date.now() - lastHist.timestamp;
+                console.log(howMuchTimeLastMs, lastHist.timestamp, howMuchTimeLastMs >= growthTimeTimeStamp)
                 
                 // Add new tree/s to forest
                 if (howMuchTimeLastMs >= growthTimeTimeStamp) {
