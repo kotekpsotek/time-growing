@@ -191,6 +191,10 @@ interface TimeTreeGain {
         timestamp: number
     }[]
 }
+
+/**
+ * **WARNING:** Listen subscription on this storage will invoke infinite loop. This is due to how curently tries system is working out
+*/
 export const timeToTreeGain = (() => {
     const c = writable<TimeTreeGain>({ history: [] });
     

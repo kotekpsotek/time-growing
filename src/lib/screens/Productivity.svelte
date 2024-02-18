@@ -10,13 +10,15 @@
     type GrowthMinute = Number;
     type GrowthMeter = Number;
 
-    let growthTime = 13;
-    let growthRatio: [GrowthMeter, GrowthMinute] = [1, 1];
     const timeWithoutUsageAnyP = {
         time: 0,
         formatted: ""
     }
     const growthTimeTimeStamp = 1_000 * 60; // 1 minute
+
+    /** Growing time in milliseconds */
+    let growthTimeMs = 0;
+    let growthRatio: [GrowthMeter, GrowthMinute] = [1, 1];
     
     type MenuItems = {
         name: string,
@@ -49,12 +51,17 @@
         timeWithoutUsageAnyP.time = lastUsages.recentUsageTimestamp(v)
         timeWithoutUsageAnyP.formatted = new TimeMeasurement(timeWithoutUsageAnyP.time)
             .format();
-    })
+    });
 
     function timeToNextGrowth(node: HTMLSpanElement) {
         const setupContent = () => {
-            node.textContent = (Math.round(timeToTreeGain.getTimeTo({ growthTimeTimeStamp, type: "None" }) / 1_000)) 
+            const timeNextGrowth = timeToTreeGain.getTimeTo({ growthTimeTimeStamp, type: "None" })
+            node.textContent = (Math.round(timeNextGrowth / 1_000)) 
                 .toString() + "s";
+
+            //
+            const growing = document.getElementById("current-growing");
+            growing!.textContent = String(Math.round((growthTimeTimeStamp - timeNextGrowth) / 1000))
         };
 
         // For current
@@ -78,11 +85,9 @@
         }, growthTimeTimeStamp)
         
         setInterval(() => {
-            // 
+            // How much time last from last usage
             timeWithoutUsageAnyP.formatted = new TimeMeasurement(timeWithoutUsageAnyP.time)
                 .format();
-
-            // 
         })
     })
 </script>
@@ -96,7 +101,11 @@
                 <p>
                     <span class="pine-span">Pine</span>
                     is growing
-                    <span class="pine-span">{growthTime}m...</span>
+                    <span class="pine-span">
+                        <span id="current-growing">
+                        </span>
+                        s...
+                    </span>
                 </p>
                 <p class="text-black" style="font-size: 14px;">
                     growth ratio is
