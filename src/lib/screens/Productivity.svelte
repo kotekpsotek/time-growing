@@ -6,6 +6,7 @@
     import forest from "$lib/icons/forest.svg"
     import { onMount } from "svelte";
     import { TimeMeasurement } from "$lib";
+    import { Percentage } from "carbon-icons-svelte";
 
     type GrowthMinute = Number;
     type GrowthMeter = Number;
@@ -53,8 +54,10 @@
             .format();
     });
 
+    /** From this function **all key functionalities** are invoking */
     function timeToNextGrowth(node: HTMLSpanElement) {
         const setupContent = () => {
+            // 
             const timeNextGrowth = timeToTreeGain.getTimeTo({ growthTimeTimeStamp, type: "None" })
             node.textContent = (Math.round(timeNextGrowth / 1_000)) 
                 .toString() + "s";
@@ -62,6 +65,9 @@
             //
             const growing = document.getElementById("current-growing");
             growing!.textContent = String(Math.round((growthTimeTimeStamp - timeNextGrowth) / 1000))
+
+            //
+            setupProgress(timeNextGrowth);
         };
 
         // For current
@@ -71,6 +77,20 @@
         setInterval(() => setupContent());
 
         return {}
+    }
+
+    function setupProgress(timeToTreeGrowth: number) {
+        //         background: conic-gradient(#54B88B 0deg, white 0deg);
+        const percentage = getPercentage(timeToTreeGrowth);
+        console.log(percentage)
+        
+        const wrapperCircle = document.getElementById("circle-wrapper");
+        wrapperCircle!.setAttribute('style', `background: conic-gradient(#54B88B ${percentage}deg, white 0deg)`);
+    }
+
+    function getPercentage(timeToTreeGrowth: number): number {
+        const onePrct = (100 - (timeToTreeGrowth / growthTimeTimeStamp * 100)) * 3.6;
+        return onePrct;
     }
 
     onMount(() => {
@@ -153,7 +173,7 @@
     #circle-wrapper {
         width: 300px;
         height: 300px;
-        background: conic-gradient(#54B88B 3.6deg, white 0deg);
+        background: conic-gradient(#54B88B 0deg, white 0deg);
         border-radius: 50%;
         font-size: 16px !important;
     }
