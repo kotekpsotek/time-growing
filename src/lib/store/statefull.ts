@@ -188,7 +188,6 @@ export const lastUsages = (() => {
     }
 })()
 
-// TODO:
 export interface TreeType {
     type: "Pine" | "None" | "Forbidden Usage", // None - means operational usage or starting usage
     growthTimeTimeStamp: number   
