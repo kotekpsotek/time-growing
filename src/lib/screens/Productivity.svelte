@@ -6,6 +6,7 @@
     import forest from "$lib/icons/forest.svg"
     import { onMount } from "svelte";
     import { TimeMeasurement } from "$lib";
+    import { growthTimeTimeStamp } from "$lib/settings";
     import { Percentage } from "carbon-icons-svelte";
 
     type GrowthMinute = Number;
@@ -15,7 +16,6 @@
         time: 0,
         formatted: ""
     }
-    const growthTimeTimeStamp = 1_000 * 60; // 1 minute
 
     /** Growing time in milliseconds */
     let growthTimeMs = 0;

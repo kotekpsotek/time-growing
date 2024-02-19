@@ -1,0 +1,1 @@
+export const growthTimeTimeStamp = 1_000 * 60; // 1 minute

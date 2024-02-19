@@ -1,3 +1,4 @@
+import { growthTimeTimeStamp } from "$lib/settings";
 import { writable, type Writable } from "svelte/store";
 
 export type Screens = "newcomer" | "defineaims" | "productivity"  | "forest";
@@ -143,6 +144,11 @@ export const lastUsages = (() => {
                         chrome.storage.sync.set({"lastusages": c});
                         return c;
                     })
+
+                    // Update time for next pine growing
+                    timeToTreeGain.update(v => {
+                        return { history: [...v.history, { treeType: "Forbidden Usage", timestamp: Date.now() }] }
+                    });
                 }
             })
             
@@ -186,13 +192,13 @@ export const lastUsages = (() => {
 
 // TODO:
 export interface TreeType {
-    type: "Pine" | "None",
+    type: "Pine" | "None" | "Forbidden Usage", // None - means operational usage or starting usage
     growthTimeTimeStamp: number   
 }
 interface TimeTreeGain {
     /** When last tree was gained */
     history: {
-        treeType: string,
+        treeType: TreeType["type"],
         timestamp: number
     }[]
 }
