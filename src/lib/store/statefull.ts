@@ -145,10 +145,8 @@ export const lastUsages = (() => {
                         return c;
                     })
 
-                    // Update time for next pine growing
-                    timeToTreeGain.update(v => {
-                        return { history: [...v.history, { treeType: "Forbidden Usage", timestamp: Date.now() }] }
-                    });
+                    // Update time to next pine growing
+                    timeToTreeGain.userUsedForbiddenPage();
                 }
             })
             
@@ -279,6 +277,14 @@ export const timeToTreeGain = (() => {
             })
             
             return timeTo;
+        },
+        /**
+         * Use always after catch user used forbidden page
+        */
+        userUsedForbiddenPage() {
+            timeToTreeGain.update(v => {
+                return { history: [...v.history, { treeType: "Forbidden Usage", timestamp: Date.now() }] }
+            });
         }
     }
 })()
