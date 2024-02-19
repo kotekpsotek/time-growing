@@ -91,7 +91,10 @@ export const aimAddTimeStamps = (() => {
 
             timestamps.update(v => {
                 for (const [originL, timeL] of Object.entries(v)) {
-                    if (originL == origin || origin.includes(origin)) {
+                    const originFilter = origin.replaceAll(/\/|https|http|[:]|\s{2,}/g, " ").trim()
+                    console.log(originL == origin, originL.includes(originFilter), originFilter, origin, originL)
+                    if (originL == origin || originL.includes(originFilter)) {
+                        console.log("Matched up!")
                         time = timeL
                         break;
                     }
@@ -124,9 +127,11 @@ export const lastUsages = (() => {
             // Auto update system
             chrome.history.onVisited.addListener(historyItem => {
                 const hItemName = historyItem.url || "";
+                console.log("Visited", hItemName)
                 
                 // Only when user has such aim defined means user breaks aim target
                 if (aimAddTimeStamps.get(hItemName)) {
+                    console.log("Now is used")
                     u.update(c => {
                         const id = c.findIndex(v => v.origin == hItemName || hItemName.includes(v.origin));
 

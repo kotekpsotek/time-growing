@@ -82,7 +82,6 @@
     function setupProgress(timeToTreeGrowth: number) {
         //         background: conic-gradient(#54B88B 0deg, white 0deg);
         const percentage = getPercentage(timeToTreeGrowth);
-        console.log(percentage)
         
         const wrapperCircle = document.getElementById("circle-wrapper");
         wrapperCircle!.setAttribute('style', `background: conic-gradient(#54B88B ${percentage}deg, white 0deg)`);
