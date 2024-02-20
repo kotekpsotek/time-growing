@@ -31,7 +31,7 @@ export class TimeMeasurement {
     }
 }
 
-import { timeToTreeGain } from "./store/statefull";
+import { timeToTreeGain } from "./store";
 /** Get tries amount from forest */
 export function getForestSize() {
     let forestSize = 0;

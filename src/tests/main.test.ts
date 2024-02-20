@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { aimAddTimeStamps, lastUsages, timeToTreeGain, type TreeType } from "../lib/store/statefull";
+import { aimAddTimeStamps, lastUsages, timeToTreeGain, type TreeType } from "../lib/store";
 import { TimeMeasurement } from "../lib/index";
 
 beforeAll(() => {
