@@ -11,3 +11,4 @@ TODO:
 <!-- - Sync between times: last usage and how much time last to growth -->
 - Bounce when user gain now new trie
 - Forest card
+- Counting time to next pine growth must be making at background stage

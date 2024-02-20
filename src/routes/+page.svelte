@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { aims, currentScreen, aimAddTimeStamps, lastUsages, timeToTreeGain } from "$lib/store/statefull";
+	import { currentScreen, aimAddTimeStamps, lastUsages, timeToTreeGain } from "$lib/store/statefull";
 	import Newcomer from "$lib/screens/Newcomer.svelte";
 	import DefineAims from "$lib/screens/DefineAims.svelte";
 	import Productivity from "$lib/screens/Productivity.svelte"
+    import Forest from "$lib/screens/Forest.svelte";
 	import { onMount } from "svelte";
 
 	onMount(async () => {
@@ -19,4 +20,6 @@
 	<Productivity/>
 {:else if $currentScreen == "defineaims"}
 	<DefineAims/>
+{:else if $currentScreen == "forest"}
+	<Forest/>
 {/if}
