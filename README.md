@@ -11,5 +11,5 @@ Meantime you can check my [protfolio webpage](http://kotekpsotek.site)
 <!-- ⌛ongoing -->
 1. GUI Skew (Figma) - **✅ succeed**,
 2. GUI - **✅ succeed**,
-3. Database - **❌ not approached**,
-4. Release  - **❌ not approached**
+3. Database - **❌ not approached** (For online release),
+4. Release  - **⌛ongoing**
