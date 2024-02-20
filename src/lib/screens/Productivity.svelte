@@ -59,12 +59,16 @@
         const setupContent = () => {
             // 
             const timeNextGrowth = timeToTreeGain.getTimeTo({ growthTimeTimeStamp, type: "None" })
-            node.textContent = (Math.round(timeNextGrowth / 1_000)) 
-                .toString() + "s";
+            if (node) {
+                node.textContent = (Math.round(timeNextGrowth / 1_000)) 
+                    .toString() + "s";
+            }
 
             //
             const growing = document.getElementById("current-growing");
-            growing!.textContent = String(Math.round((growthTimeTimeStamp - timeNextGrowth) / 1000))
+            if (growing) {
+                growing.textContent = String(Math.round((growthTimeTimeStamp - timeNextGrowth) / 1000))
+            }
 
             //
             setupProgress(timeNextGrowth);
@@ -84,7 +88,7 @@
         const percentage = getPercentage(timeToTreeGrowth);
         
         const wrapperCircle = document.getElementById("circle-wrapper");
-        wrapperCircle!.setAttribute('style', `background: conic-gradient(#54B88B ${percentage}deg, white 0deg)`);
+        wrapperCircle?.setAttribute('style', `background: conic-gradient(#54B88B ${percentage}deg, white 0deg)`);
     }
 
     function getPercentage(timeToTreeGrowth: number): number {
