@@ -1,3 +1,4 @@
+import { getForestSize } from "$lib";
 import { growthTimeTimeStamp } from "$lib/settings";
 import { writable, type Writable } from "svelte/store";
 
@@ -284,6 +285,8 @@ export const timeToTreeGain = (() => {
             timeToTreeGain.update(v => {
                 return { history: [...v.history, { treeType: "Forbidden Usage", timestamp: Date.now() }] }
             });
-        }
+        },
+        triesCount: getForestSize,
+        getTriesCount: getForestSize
     }
 })()

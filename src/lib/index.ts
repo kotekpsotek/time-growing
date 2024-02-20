@@ -30,3 +30,21 @@ export class TimeMeasurement {
         return f.length ? f : "0s";
     }
 }
+
+import { timeToTreeGain } from "./store/statefull";
+/** Get tries amount from forest */
+export function getForestSize() {
+    let forestSize = 0;
+
+    timeToTreeGain.update(u => {
+        u.history.forEach(it => {
+            if (it.treeType == "Pine") {
+                forestSize += 1;
+            }
+        })
+        
+        return u;
+    })
+    
+    return forestSize;
+}

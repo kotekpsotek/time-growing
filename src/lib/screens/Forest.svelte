@@ -2,8 +2,14 @@
     import { currentScreen, aims } from "$lib/store/statefull";
     import ActionBar from "./parts/ActionBar.svelte";
     import forest from "$lib/icons/forest-2.svg";
+    import { getForestSize } from "$lib";
+    import { growthTimeTimeStamp } from "$lib/settings";
 
-    let numberTries = 0;
+    // Get tries count
+    let numberTries = getForestSize();
+    setInterval(() => {
+        numberTries = getForestSize();
+    }, growthTimeTimeStamp + 100)
 
     function back() {
         $currentScreen = Object.keys($aims).length ? "productivity" : "newcomer";
