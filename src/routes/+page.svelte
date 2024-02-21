@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { currentScreen, aimAddTimeStamps, lastUsages, timeToTreeGain } from "$lib/store/statefull";
+	import { currentScreen, aimAddTimeStamps, lastUsages, timeToTreeGain } from "$lib/store";
 	import Newcomer from "$lib/screens/Newcomer.svelte";
 	import DefineAims from "$lib/screens/DefineAims.svelte";
 	import Productivity from "$lib/screens/Productivity.svelte"

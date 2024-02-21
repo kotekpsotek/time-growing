@@ -31,6 +31,7 @@ export class TimeMeasurement {
     }
 }
 
+import { growthTimeTimeStamp } from "./settings";
 import { timeToTreeGain } from "./store";
 /** Get tries amount from forest */
 export function getForestSize() {
@@ -47,4 +48,48 @@ export function getForestSize() {
     })
     
     return forestSize;
+}
+
+/** Calculating time to next growth and launch progress visual */
+export function timeToNextGrowth(node: HTMLSpanElement) {
+    const setupContent = async () => {
+        // 
+        const timeNextGrowth = await timeToTreeGain.getTimeTo();
+        if (node) {
+            node.textContent = (Math.round(timeNextGrowth / 1_000)) 
+                .toString() + "s";
+        }
+
+        //
+        const growing = document.getElementById("current-growing");
+        if (growing) {
+            growing.textContent = String(Math.round((growthTimeTimeStamp - timeNextGrowth) / 1000))
+        }
+
+        //
+        setupProgress(timeNextGrowth);
+    };
+
+    // For current
+    setupContent();
+
+    // For new
+    setInterval(() => setupContent());
+
+    return {}
+}
+
+function setupProgress(timeToTreeGrowth: number): number {
+    //         background: conic-gradient(#54B88B 0deg, white 0deg);
+    const percentage = getPercentage(timeToTreeGrowth);
+    
+    const wrapperCircle = document.getElementById("circle-wrapper");
+    wrapperCircle?.setAttribute('style', `background: conic-gradient(#54B88B ${percentage}deg, white 0deg)`);
+
+    return percentage;
+}
+
+function getPercentage(timeToTreeGrowth: number): number {
+    const onePrct = (100 - (timeToTreeGrowth / growthTimeTimeStamp * 100)) * 3.6;
+    return onePrct;
 }

@@ -184,7 +184,7 @@ export const lastUsages = (() => {
 })()
 
 /**
- * **WARNING:** Listen subscription on this storage will invoke infinite loop. This is due to how curently tries system is working out
+ * **WARNING:** Listing subscription on this storage will invoke infinite loop. This is due to how curently tries system is working out
 */
 export const timeToTreeGain = (() => {
     const c = writable<TimeTreeGain>({ history: [] });
@@ -231,6 +231,9 @@ export const timeToTreeGain = (() => {
                             //                                                                    Here was mistake whose take mine few hours 
                             //                                                                    Description: While's only one tree or is a last tree from a current date difference shouldn't be removing standby to growth time (growthTimeTimeStamp) because such notion exists only for a past tries occurenes but not for a current tries
                         })
+
+                        // When this tree will have grown
+                        if (i == 1) StartedCountingOnNextGrowth.set()
                     }
                 }
                 
@@ -246,19 +249,13 @@ export const timeToTreeGain = (() => {
          * @description This method always will **return time to next tree growth**. ***Warning Working Proof:*** Method does not refill ungrowth trees, use for that `updateT()` method
          * @param param0 
          */
-        getTimeTo({ growthTimeTimeStamp }: TreeType): number {
-            let timeTo = 0;
+        async getTimeTo(): Promise<number> {
+            let time = await StartedCountingOnNextGrowth.get();
+            if (!time || time <= Date.now()) time = await StartedCountingOnNextGrowth.set();
 
-            c.update(v => {
-                const last = v.history[v.history.length - 1]?.timestamp || 0;
-                const diffHist = Date.now() - last;
-                
-                timeTo = growthTimeTimeStamp - diffHist % growthTimeTimeStamp
-                
-                return v;
-            })
-            
-            return timeTo;
+            const diffHist = time! - Date.now();
+
+            return diffHist;
         },
         /**
          * Use always after catch user used forbidden page
@@ -271,4 +268,27 @@ export const timeToTreeGain = (() => {
         triesCount: getForestSize,
         getTriesCount: getForestSize
     }
-})()
+})();
+
+class StartedCountingOnNextGrowth {
+    static async get() {
+        const time = (await chrome.storage.sync.get("tgn"))["tgn"];
+
+        if (time) {
+            return Number(time)
+        }
+
+        return;
+    }
+    
+    static async set() {
+        let g = await this.get();
+
+        if (!g || Date.now() >= g) {
+            console.log("Set")
+            await chrome.storage.sync.set({ tgn: Date.now() + growthTimeTimeStamp });
+        }
+
+        return g;
+    }
+}

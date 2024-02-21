@@ -1,5 +1,5 @@
 <script>
-    import { currentScreen, aims } from "$lib/store/statefull";
+    import { currentScreen, aims } from "$lib/store";
     import ActionBar from "./parts/ActionBar.svelte";
     import forest from "$lib/icons/forest-2.svg";
     import { getForestSize } from "$lib";

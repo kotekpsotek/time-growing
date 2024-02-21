@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { aimAddTimeStamps, lastUsages, timeToTreeGain, type TreeType } from "../lib/store";
+import { aimAddTimeStamps, lastUsages, timeToTreeGain } from "../lib/store";
 import { TimeMeasurement } from "../lib/index";
 
 beforeAll(() => {
@@ -76,7 +76,7 @@ describe("Time to tree growth advanced calculation", () => {
     const growthParam = { growthTimeTimeStamp: 20_000, type: "Pine" } as TreeType;
     
     it("Method #1: How much time last to growth -> Always will return time remanding to next growth\n\t(Before refill)", () => {
-        const result = timeToTreeGain.getTimeTo(growthParam)
+        const result = timeToTreeGain.getTimeTo() // FIXME: Change made -> Won't be working
         
         expect(result).toBeGreaterThan(14970)
         expect(result).to.be.lessThan(15000)
@@ -87,7 +87,7 @@ describe("Time to tree growth advanced calculation", () => {
         timeToTreeGain.updateT(Date.now(), growthParam)
         
         // After
-        const result = timeToTreeGain.getTimeTo(growthParam)
+        const result = timeToTreeGain.getTimeTo() // FIXME: Change made -> Won't be working
         
         expect(result).toBeGreaterThan(19995)
         expect(result).to.be.lessThan(20003)

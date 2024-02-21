@@ -1,11 +1,11 @@
 <script lang="ts">
     import MenuBar from "./parts/MenuBar.svelte";
-    import { currentScreen, lastUsages, timeToTreeGain } from "$lib/store/statefull";
+    import { currentScreen, lastUsages, timeToTreeGain } from "$lib/store";
     import Pine from "$lib/icons/pine.svg"
     import aim from "$lib/icons/aim.svg"
     import forest from "$lib/icons/forest.svg"
     import { onMount } from "svelte";
-    import { TimeMeasurement } from "$lib";
+    import { TimeMeasurement, timeToNextGrowth } from "$lib";
     import { growthTimeTimeStamp } from "$lib/settings";
     import { Percentage } from "carbon-icons-svelte";
 
@@ -53,48 +53,6 @@
         timeWithoutUsageAnyP.formatted = new TimeMeasurement(timeWithoutUsageAnyP.time)
             .format();
     });
-
-    /** From this function **all key functionalities** are invoking */
-    function timeToNextGrowth(node: HTMLSpanElement) {
-        const setupContent = () => {
-            // 
-            const timeNextGrowth = timeToTreeGain.getTimeTo({ growthTimeTimeStamp, type: "None" })
-            if (node) {
-                node.textContent = (Math.round(timeNextGrowth / 1_000)) 
-                    .toString() + "s";
-            }
-
-            //
-            const growing = document.getElementById("current-growing");
-            if (growing) {
-                growing.textContent = String(Math.round((growthTimeTimeStamp - timeNextGrowth) / 1000))
-            }
-
-            //
-            setupProgress(timeNextGrowth);
-        };
-
-        // For current
-        setupContent();
-
-        // For new
-        setInterval(() => setupContent());
-
-        return {}
-    }
-
-    function setupProgress(timeToTreeGrowth: number) {
-        //         background: conic-gradient(#54B88B 0deg, white 0deg);
-        const percentage = getPercentage(timeToTreeGrowth);
-        
-        const wrapperCircle = document.getElementById("circle-wrapper");
-        wrapperCircle?.setAttribute('style', `background: conic-gradient(#54B88B ${percentage}deg, white 0deg)`);
-    }
-
-    function getPercentage(timeToTreeGrowth: number): number {
-        const onePrct = (100 - (timeToTreeGrowth / growthTimeTimeStamp * 100)) * 3.6;
-        return onePrct;
-    }
 
     onMount(() => {
         // Loading tries row and 
@@ -149,7 +107,7 @@
             </div>
         </div>
         <div id="label" class="bg-white rounded-md p-2">
-            <p class="pine-span">In <span style="font-weight: bold;" use:timeToNextGrowth></span> will be transforming to <span style="font-weight: bold;">Pine</span></p>
+            <p class="pine-span">In <span style="font-weight: bold;" id="timenxt-1/2" use:timeToNextGrowth></span> will be transforming to <span style="font-weight: bold;">Pine</span></p>
         </div>
     </div>
     <p id="time-non-usage" class="font-bold">

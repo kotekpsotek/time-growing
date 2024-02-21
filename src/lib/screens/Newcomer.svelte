@@ -1,6 +1,6 @@
 <script>
 	import img from "../icons/tree.png"
-    import { currentScreen } from "$lib/store/statefull";
+    import { currentScreen } from "$lib/store";
 
 	function switchScreen() {
 		currentScreen.change("defineaims");

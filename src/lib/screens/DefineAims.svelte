@@ -1,7 +1,7 @@
 <script lang="ts">
     import ActionBar from "./parts/ActionBar.svelte";
     import addIcon from "../icons/add.svg";
-    import { currentScreen, aims as a, aimAddTimeStamps, lastUsages } from "../store/statefull";
+    import { currentScreen, aims as a, aimAddTimeStamps, lastUsages } from "../store";
     import { writable, type Writable } from "svelte/store";
     import { fade } from "svelte/transition";
     import { CloseOutline, TaskAdd, TrashCan } from "carbon-icons-svelte";
