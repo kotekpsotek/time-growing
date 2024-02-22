@@ -8,6 +8,7 @@
     import { TimeMeasurement, timeToNextGrowth } from "$lib";
     import { growthTimeTimeStamp } from "$lib/settings";
     import { Percentage } from "carbon-icons-svelte";
+    import Boost from "./parts/Boost.svelte";
 
     type GrowthMinute = Number;
     type GrowthMeter = Number;
@@ -109,6 +110,9 @@
         <div id="label" class="bg-white rounded-md p-2">
             <p class="pine-span">In <span style="font-weight: bold;" id="timenxt-1/2" use:timeToNextGrowth></span> will be transforming to <span style="font-weight: bold;">Pine</span></p>
         </div>
+        {#if true} <!-- FIXME: Replace if condition -->
+            <Boost/>
+        {/if}
     </div>
     <p id="time-non-usage" class="font-bold">
         <span class="pine-span">{timeWithoutUsageAnyP.formatted}</span>

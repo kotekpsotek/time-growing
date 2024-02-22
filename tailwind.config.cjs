@@ -21,7 +21,8 @@ const config = {
       },
       fontFamily: {
         "dancing-script": ["Dancing Script", "sans-serif"],
-        "oxygen-bold": ["Oxygen Bold",  "sans-serif"]
+        "oxygen-bold": ["Oxygen Bold",  "sans-serif"],
+        "kalam-regular": ["Kalam Regular", "cursive"]
       },
       colors: {
         "act-btns": "#1492C8",
