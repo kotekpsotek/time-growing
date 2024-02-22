@@ -93,3 +93,32 @@ function getPercentage(timeToTreeGrowth: number): number {
     const onePrct = (100 - (timeToTreeGrowth / growthTimeTimeStamp * 100)) * 3.6;
     return onePrct;
 }
+
+import { aims, lastUsages, aimAddTimeStamps } from "./store";
+export function getBoost(): number | undefined {
+    let ret = 0;
+    
+    const shouldApplyBoost = (from: number, aim: number) => {
+        const diff = Date.now() - from;
+        return diff >= aim;
+    }
+
+    aims.subscribe(v => {
+        for (const [key, value] of Object.entries(v)) {
+            const aimReachMS = Number(value) * 60 * 1_000;
+            //                 ^ Minutes
+            //                                 ^ Seconds
+            //                                      ^ Miliseconds
+                            
+            const lastUsageForOrg = lastUsages.getLastUsageForOrigin(key);
+            const addDate = aimAddTimeStamps.get(key);
+
+
+            if (shouldApplyBoost((!lastUsageForOrg ? addDate : lastUsageForOrg), aimReachMS)) {
+                ret += 1;
+            }
+        }
+    })();
+
+    return ret;
+}

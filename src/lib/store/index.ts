@@ -179,6 +179,19 @@ export const lastUsages = (() => {
                 chrome.storage.sync.set({"lastusages": v});
                 return v;
             })
+        },
+        getLastUsageForOrigin(origin: string): undefined | number {
+            let ret: number = 0;
+
+            u.update(us => {
+                for (const u of us) {
+                    if (u.origin == origin) ret = u.timestamp;
+                }
+                
+                return us;
+            })
+
+            return ret || undefined;
         }
     }
 })()
