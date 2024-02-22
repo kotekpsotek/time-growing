@@ -5,7 +5,7 @@
 
     setInterval(() => {
         boost = getBoost() || 0;
-    }, 3_000)
+    }, 500)
 </script>
 
 {#if boost}
