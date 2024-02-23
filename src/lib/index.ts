@@ -55,6 +55,7 @@ export function timeToNextGrowth(node: HTMLSpanElement) {
     const setupContent = async () => {
         // 
         const timeNextGrowth = await timeToTreeGain.getTimeTo();
+        console.log(timeNextGrowth)
         if (node) {
             node.textContent = (Math.round(timeNextGrowth / 1_000)) 
                 .toString() + "s";

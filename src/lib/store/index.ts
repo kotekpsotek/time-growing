@@ -93,9 +93,7 @@ export const aimAddTimeStamps = (() => {
             timestamps.update(v => {
                 for (const [originL, timeL] of Object.entries(v)) {
                     const originFilter = origin.replaceAll(/\/|https|http|[:]|\s{2,}/g, " ").trim()
-                    console.log(originL == origin, originL.includes(originFilter), originFilter, origin, originL)
                     if (originL == origin || originL.includes(originFilter)) {
-                        console.log("Matched up!")
                         time = timeL
                         break;
                     }
@@ -121,7 +119,7 @@ export const lastUsages = (() => {
         ...u,
         async load() {
             // Auto update system
-            chrome.history.onVisited.addListener(historyItem => {
+            chrome.history.onVisited.addListener(async historyItem => {
                 const hItemName = historyItem.url || "";
                 console.log("Visited", hItemName)
                 
@@ -136,7 +134,9 @@ export const lastUsages = (() => {
                             c[id].timestamp = Date.now()
                         }
                         
-                        chrome.storage.sync.set({"lastusages": c});
+                        (async () => {
+                            await chrome.storage.sync.set({"lastusages": c});
+                        })();
                         return c;
                     })
 
@@ -275,6 +275,8 @@ export const timeToTreeGain = (() => {
         */
         userUsedForbiddenPage() {
             timeToTreeGain.update(v => {
+                StartedCountingOnNextGrowth.set(true)
+                    .then(() => console.log("Forbidden bage has been used"));
                 return { history: [...v.history, { treeType: "Forbidden Usage", timestamp: Date.now() }] }
             });
         },
@@ -294,10 +296,10 @@ class StartedCountingOnNextGrowth {
         return;
     }
     
-    static async set() {
+    static async set(force: boolean = false) {
         let g = await this.get();
 
-        if (!g || Date.now() >= g) {
+        if (force || !g || Date.now() >= g) {
             console.log("Set")
             await chrome.storage.sync.set({ tgn: Date.now() + growthTimeTimeStamp });
         }
