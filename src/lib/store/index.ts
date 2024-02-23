@@ -1,4 +1,4 @@
-import { getForestSize } from "$lib";
+import { getBoost, getForestSize } from "$lib";
 import { growthTimeTimeStamp } from "$lib/settings";
 import { writable, type Writable } from "svelte/store";
 
@@ -235,7 +235,7 @@ export const timeToTreeGain = (() => {
                 
                 // Add new tree/s to forest
                 if (howMuchTimeLastMs >= growthTimeTimeStamp) {
-                    const treesNum = Math.floor(howMuchTimeLastMs / growthTimeTimeStamp);
+                    const treesNum = Math.floor(howMuchTimeLastMs / growthTimeTimeStamp) * (getBoost() || 1);
 
                     for (let i = treesNum; i > 0; i--) {
                         actualState.history.push({
