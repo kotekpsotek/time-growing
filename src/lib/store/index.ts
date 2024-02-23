@@ -285,7 +285,7 @@ export const timeToTreeGain = (() => {
     }
 })();
 
-class StartedCountingOnNextGrowth {
+export class StartedCountingOnNextGrowth {
     static async get() {
         const time = (await chrome.storage.sync.get("tgn"))["tgn"];
 
